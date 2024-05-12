@@ -1,0 +1,27 @@
+###
+GET http://localhost:3000/api/users
+###
+POST http://localhost:3000/api/users
+Content-Type: application/json
+
+{
+    "name": "juanito new",
+    "lastname": "perez",
+    "phone": "0982763941"
+}
+
+###
+GET http://localhost:3000/api/users/d278cbbf-839c-4ea1-98d3-1559005bf1a6
+
+###
+PUT http://localhost:3000/api/users/b4d53f4a-0b20-47cd-987e-c64eae250471
+Content-Type: application/json
+
+{
+    "name": "juan ultra modificado",
+    "lastname": "perez",
+    "phone": "0982763941"
+}
+
+###
+DELETE http://localhost:3000/api/users/d278cbbf-839c-4ea1-98d3-1559005bf1a6
