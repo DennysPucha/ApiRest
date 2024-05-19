@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "../../../libs/prisma";
 import { userSchema } from "../../../schemas/schemas";
 import { modelUserSanitized } from "../../../utils/cleanModels";
+
 export async function GET() {
     try {
         const users = await prisma.user.findMany()
@@ -38,7 +39,7 @@ export async function POST(request: Request) {
         });
 
         if (!created) return NextResponse.json({ 
-            message: "resource not created",
+            message: "user not created",
             code: 400 
         }, { status: 400 })
 

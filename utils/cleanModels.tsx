@@ -1,4 +1,4 @@
-import { userType, credentialType } from "../types/types"
+import { userType, credentialType, rolType } from "../types/types"
 import { prisma } from "../libs/prisma";
 export const modelUserSanitized= ((model:userType)=>{ 
     delete model.id
@@ -33,3 +33,8 @@ export const modelCredentialUserSanitized=((model:any)=>{
     return model
 })
 
+
+export const modelRolSanitized=((model:rolType)=>{
+    delete model.id
+    return model
+})

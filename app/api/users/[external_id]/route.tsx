@@ -45,12 +45,13 @@ export async function PUT(request: Request, { params }: Params) {
             data: {
                 name,
                 lastname,
-                phone
+                phone,
+                external_id: crypto.randomUUID()
             }
         });
 
         if (!updated) return NextResponse.json({ 
-            message: "resource not updated",
+            message: "user not updated",
             code: 400 }, { status: 400 })
 
         const updatedSanitized= modelUserSanitized(updated)
@@ -79,7 +80,7 @@ export async function DELETE(request: Request, { params }: Params) {
         });
 
         if (!deleted) return NextResponse.json({ 
-            message: "resource not deleted",
+            message: "user not deleted",
             code: 400 }, { status: 400 })
 
         const updatedSanitized= modelUserSanitized(deleted)

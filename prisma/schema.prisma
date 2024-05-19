@@ -33,7 +33,7 @@ model Credentials{
 
 model Rol{
   id Int @id @default(autoincrement())
-  name String
+  name String @unique
   description String @default("default")
   state Boolean @default(true)
   credentials Credentials[] 

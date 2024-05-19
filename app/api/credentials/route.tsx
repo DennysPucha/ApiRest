@@ -66,7 +66,7 @@ export async function POST(request: Request) {
         });
 
         if (!created) return NextResponse.json({ 
-            message: "resource not created",
+            message: "credential not created",
             code: 400 
         }, { status: 400 })
 

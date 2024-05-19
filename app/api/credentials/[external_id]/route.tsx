@@ -12,12 +12,12 @@ export async function GET(request: Request, { params }: Params) {
             where: { external_id: params.external_id }
         })
 
-        if (!credentials) return NextResponse.json({ message: "credentials not found", code: 404 }, { status: 404 })
+        if (!credentials) return NextResponse.json({ message: "credential not found", code: 404 }, { status: 404 })
         
         const sanitizedcredentials= await modelCredentialSanitized(credentials)
         
         return NextResponse.json({ 
-            message: "ok! credentials obtained",
+            message: "ok! credential obtained",
             code: 200,
             data: sanitizedcredentials}, { status: 200 })
     
@@ -35,7 +35,7 @@ export async function PUT(request: Request, { params }: Params) {
 
     const credentials = await prisma.credentials.findFirst({ where: { external_id: params.external_id } })
 
-    if (!credentials) return NextResponse.json({ message: "credentials not found", code: 404 }, { status: 404 })
+    if (!credentials) return NextResponse.json({ message: "credential not found", code: 404 }, { status: 404 })
 
     
     try {
@@ -59,18 +59,19 @@ export async function PUT(request: Request, { params }: Params) {
             },
             data: {
                 email,
-                password
+                password,
+                external_id: crypto.randomUUID()
             },
         });
 
         if (!updated) return NextResponse.json({ 
-            message: "resource not updated",
+            message: "credential not updated",
             code: 400 }, { status: 400 })
         
         const updatedSanitized = await modelCredentialSanitized(updated)
 
         return NextResponse.json({
-            message: "credentials updated",
+            message: "credential updated",
             code: 200,
             data: updatedSanitized
         }, { status: 200 })
@@ -94,13 +95,13 @@ export async function DELETE(request: Request, { params }: Params) {
         })
 
         if (!deleted) return NextResponse.json({ 
-            message: "resource not elimined",
+            message: "credential not elimined",
             code:400}, { status: 400 })
 
         const deletedSanitized = await  modelCredentialSanitized(deleted)
 
         return NextResponse.json({
-            message: "credentials deleted",
+            message: "credential deleted",
             code: 200,
             data: deletedSanitized
         }, { status: 200 })

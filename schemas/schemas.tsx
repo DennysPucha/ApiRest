@@ -18,3 +18,17 @@ export const credentialPutSchema= z.object({
     lastpassword: string(), 
     password: string()
 })
+
+
+export const rolSchema= z.object({
+    name: z.string(),
+    description: z.string().optional(),
+    state: z.boolean().optional()
+})
+
+
+export const rolUpdateSchema= z.object({
+    name: z.string().optional(),
+    description: z.string().optional(),
+    state: z.boolean().optional()
+})

@@ -34,3 +34,11 @@ export interface userCredentialType {
     }|{};
     external_id: string;
 }
+
+export interface rolType{
+    id: number;
+    name: string;
+    description: string;
+    state: boolean;
+    external_id: string;
+}
