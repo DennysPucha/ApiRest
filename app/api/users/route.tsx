@@ -1,15 +1,13 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../libs/prisma";
 import { userSchema } from "../../../schemas/schemas";
-import { modelUserCredentialSanitized , modelCredentialSanitized} from "../../../utils/cleanModels";
+import { modelUserSanitized } from "../../../utils/cleanModels";
 export async function GET() {
     try {
-        const users = ((await prisma.user.findMany({
-            include:{credentials:true}
-        })))
+        const users = await prisma.user.findMany()
 
         const sanitizedUsers = users.map(user => {
-            return modelUserCredentialSanitized(user)            
+            return modelUserSanitized(user)            
         });
 
         return NextResponse.json({
@@ -44,7 +42,7 @@ export async function POST(request: Request) {
             code: 400 
         }, { status: 400 })
 
-        const credatedSanitized= modelUserCredentialSanitized(created)
+        const credatedSanitized= modelUserSanitized(created)
 
         return NextResponse.json({
             message: "user created",

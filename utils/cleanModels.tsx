@@ -1,13 +1,18 @@
 import { userType, credentialType } from "../types/types"
-
+import { prisma } from "../libs/prisma";
 export const modelUserSanitized= ((model:userType)=>{ 
     delete model.id
     return model
 })
 
-export const modelCredentialSanitized=((model:credentialType)=>{
-    delete model.id
-    delete model.user_id
+export const modelCredentialSanitized=(async (model:credentialType) =>{
+    const rol = await prisma.rol.findUnique({where:{id:model.rol_id}})
+    if(rol) model.rol=rol.name
+
+        delete model.rol_id
+        delete model.id
+        delete model.user_id
+
     return model
 })
 

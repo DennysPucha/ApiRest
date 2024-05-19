@@ -1,18 +1,18 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../../libs/prisma";
 import { userSchema } from "../../../../schemas/schemas";
-import { modelUserCredentialSanitized } from "../../../../utils/cleanModels";
+import { modelUserSanitized } from "../../../../utils/cleanModels";
 interface Params { params: { external_id: string } }
 interface RequestQuery { foo:string}
 
 export async function GET(request: Request, { params }: Params) {
     
     try {
-        const user = await prisma.user.findFirst({ where: { external_id: params.external_id },include:{credentials:true}})
+        const user = await prisma.user.findFirst({ where: { external_id: params.external_id }})
 
         if (!user) return NextResponse.json({ message: "user not found", code: 404 }, { status: 404 })
         
-        const userSanitized= modelUserCredentialSanitized(user)
+        const userSanitized= modelUserSanitized(user)
 
         return NextResponse.json({ 
             message: "ok! user obtained",
@@ -31,7 +31,7 @@ export async function PUT(request: Request, { params }: Params) {
 
     if (!result.success) return NextResponse.json(result.error)
 
-    const user = await prisma.user.findFirst({ where: { external_id: params.external_id },include:{credentials:true}})
+    const user = await prisma.user.findFirst({ where: { external_id: params.external_id }})
 
     if (!user) return NextResponse.json({ message: "user not found", code: 404 }, { status: 404 })
 
@@ -46,9 +46,6 @@ export async function PUT(request: Request, { params }: Params) {
                 name,
                 lastname,
                 phone
-            },
-            include:{
-                credentials:true
             }
         });
 
@@ -56,7 +53,7 @@ export async function PUT(request: Request, { params }: Params) {
             message: "resource not updated",
             code: 400 }, { status: 400 })
 
-        const updatedSanitized= modelUserCredentialSanitized(updated)
+        const updatedSanitized= modelUserSanitized(updated)
 
         return NextResponse.json({
             message: "user updated",
@@ -71,22 +68,21 @@ export async function PUT(request: Request, { params }: Params) {
 
 export async function DELETE(request: Request, { params }: Params) {
   
-    const user = await prisma.user.findFirst({ where: { external_id: params.external_id },include:{credentials:true} })
+    const user = await prisma.user.findFirst({ where: { external_id: params.external_id }})
 
     if (!user) return NextResponse.json({ message: "user not found", code: 404 }, { status: 404 })
 
     try {
 
         const deleted = await prisma.user.delete({
-            where: {external_id: user.external_id},
-            include:{credentials:true}
+            where: {external_id: user.external_id}
         });
 
         if (!deleted) return NextResponse.json({ 
             message: "resource not deleted",
             code: 400 }, { status: 400 })
 
-        const updatedSanitized= modelUserCredentialSanitized(deleted)
+        const updatedSanitized= modelUserSanitized(deleted)
 
         return NextResponse.json({
             message: "user deleted",

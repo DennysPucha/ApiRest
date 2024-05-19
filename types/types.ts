@@ -4,6 +4,8 @@ export interface credentialType{
     password: string;
     state: boolean;
     user_id: number;
+    rol_id: number;
+    rol?: string;
     external_id: string;
 }
 

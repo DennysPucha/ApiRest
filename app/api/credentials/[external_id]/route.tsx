@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "../../../../libs/prisma";
 import { credentialPutSchema} from "../../../../schemas/schemas";
 import { modelCredentialSanitized } from "../../../../utils/cleanModels";
+import { comparePasswords,hashPassword } from "../../../../hooks/cifrateHook";
 interface Params { params: { external_id: string } }
 
 
@@ -13,7 +14,7 @@ export async function GET(request: Request, { params }: Params) {
 
         if (!credentials) return NextResponse.json({ message: "credentials not found", code: 404 }, { status: 404 })
         
-        const sanitizedcredentials= modelCredentialSanitized(credentials)
+        const sanitizedcredentials= await modelCredentialSanitized(credentials)
         
         return NextResponse.json({ 
             message: "ok! credentials obtained",
@@ -38,9 +39,19 @@ export async function PUT(request: Request, { params }: Params) {
 
     
     try {
-        const { email, password, lastpassword} = result.data;
+        const { email, password:pswOutCifrate, lastpassword} = result.data;
 
-        if(credentials.password!==lastpassword) return NextResponse.json({ message: "credentials incorrects", code: 400 }, { status: 400 }) 
+        const credentialsCorrects=await comparePasswords(lastpassword,credentials.password)
+
+        if(!credentialsCorrects) return NextResponse.json({ message: "credentials incorrects", code: 400 }, { status: 400 }) 
+        
+        const existingCredentials = await prisma.credentials.findFirst({ where: { email } });
+        
+        if (existingCredentials && existingCredentials.external_id !== credentials.external_id) {
+            return NextResponse.json({ message: "Email already in use", code: 400 }, { status: 400 });
+        }
+
+        const password= await hashPassword(pswOutCifrate)
 
         const updated = await prisma.credentials.update({
             where: {
@@ -55,13 +66,13 @@ export async function PUT(request: Request, { params }: Params) {
         if (!updated) return NextResponse.json({ 
             message: "resource not updated",
             code: 400 }, { status: 400 })
-
-        delete updated.id
+        
+        const updatedSanitized = await modelCredentialSanitized(updated)
 
         return NextResponse.json({
             message: "credentials updated",
             code: 200,
-            data: updated
+            data: updatedSanitized
         }, { status: 200 })
 
     } catch (error) {
@@ -86,12 +97,12 @@ export async function DELETE(request: Request, { params }: Params) {
             message: "resource not elimined",
             code:400}, { status: 400 })
 
-        delete deleted.id
+        const deletedSanitized = await  modelCredentialSanitized(deleted)
 
         return NextResponse.json({
             message: "credentials deleted",
             code: 200,
-            data: deleted
+            data: deletedSanitized
         }, { status: 200 })
 
     } catch (error) {

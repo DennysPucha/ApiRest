@@ -11,10 +11,10 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:3000/api/users/d278cbbf-839c-4ea1-98d3-1559005bf1a6
+GET http://localhost:3000/api/users/6691f08d-6e29-4026-86af-2e1d9c61fbce
 
 ###
-PUT http://localhost:3000/api/users/b4d53f4a-0b20-47cd-987e-c64eae250471
+PUT http://localhost:3000/api/users/6691f08d-6e29-4026-86af-2e1d9c61fbce
 Content-Type: application/json
 
 {
@@ -24,4 +24,4 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:3000/api/users/d278cbbf-839c-4ea1-98d3-1559005bf1a6
+DELETE http://localhost:3000/api/users/6691f08d-6e29-4026-86af-2e1d9c61fbce
