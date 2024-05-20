@@ -32,3 +32,19 @@ export const rolUpdateSchema= z.object({
     description: z.string().optional(),
     state: z.boolean().optional()
 })
+
+export const accountSchema= z.object({
+    name: z.string(),
+    lastname: z.string(),
+    phone: z.string().refine(value => /^\d{9,11}$/.test(value), {
+        message: 'The phone must be a 9 to 11 digits'
+    }),
+    email: string().email(),
+    lastpassword: string().optional(),
+    password: string()
+})
+
+export const deleteAccountSchema= z.object({
+    email: string().email(),
+    password: string()
+})

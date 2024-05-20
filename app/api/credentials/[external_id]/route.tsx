@@ -45,9 +45,9 @@ export async function PUT(request: Request, { params }: Params) {
 
         if(!credentialsCorrects) return NextResponse.json({ message: "credentials incorrects", code: 400 }, { status: 400 }) 
         
-        const existingCredentials = await prisma.credentials.findFirst({ where: { email } });
+        const credentialsExist = await prisma.credentials.findFirst({ where: { email } });
         
-        if (existingCredentials && existingCredentials.external_id !== credentials.external_id) {
+        if (credentialsExist && credentialsExist.external_id !== credentials.external_id) {
             return NextResponse.json({ message: "Email already in use", code: 400 }, { status: 400 });
         }
 

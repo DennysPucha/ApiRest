@@ -16,12 +16,15 @@ export const modelCredentialSanitized=(async (model:credentialType) =>{
     return model
 })
 
-export const modelUserCredentialSanitized=((model:any)=>{
+export const modelUserCredentialSanitized=(async (model:any)=>{
     delete model.id
     if(!model.credentials) model.credentials={}
     else{
+        const rol = await prisma.rol.findUnique({where:{id:model.credentials.rol_id}})
+        if(rol) model.credentials.rol=rol.name
         delete model.credentials.id
         delete model.credentials.user_id
+        delete model.credentials.rol_id
     }
     return model
 })

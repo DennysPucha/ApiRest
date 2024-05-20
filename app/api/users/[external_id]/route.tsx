@@ -31,16 +31,16 @@ export async function PUT(request: Request, { params }: Params) {
 
     if (!result.success) return NextResponse.json(result.error)
 
-    const user = await prisma.user.findFirst({ where: { external_id: params.external_id }})
+    const userExist = await prisma.user.findFirst({ where: { external_id: params.external_id }})
 
-    if (!user) return NextResponse.json({ message: "user not found", code: 404 }, { status: 404 })
+    if (!userExist) return NextResponse.json({ message: "user not found", code: 404 }, { status: 404 })
 
     try {
         const { phone, lastname, name } = result.data;
 
         const updated = await prisma.user.update({
             where: {
-                external_id: user.external_id
+                external_id: userExist.external_id
             },
             data: {
                 name,
@@ -69,14 +69,14 @@ export async function PUT(request: Request, { params }: Params) {
 
 export async function DELETE(request: Request, { params }: Params) {
   
-    const user = await prisma.user.findFirst({ where: { external_id: params.external_id }})
+    const userExist = await prisma.user.findFirst({ where: { external_id: params.external_id }})
 
-    if (!user) return NextResponse.json({ message: "user not found", code: 404 }, { status: 404 })
+    if (!userExist) return NextResponse.json({ message: "user not found", code: 404 }, { status: 404 })
 
     try {
 
         const deleted = await prisma.user.delete({
-            where: {external_id: user.external_id}
+            where: {external_id: userExist.external_id}
         });
 
         if (!deleted) return NextResponse.json({ 
