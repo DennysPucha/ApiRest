@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../../../libs/prisma";
-import { accountSchema, deleteAccountSchema } from "../../../../../schemas/schemas";
+import { accountSchema, authSchema } from "../../../../../schemas/schemas";
 import { modelUserCredentialSanitized } from "../../../../../utils/cleanModels";
 import { rolUser } from "../../../../../hooks/foundData";
 import { comparePasswords,hashPassword } from "../../../../../hooks/cifrateHook";
@@ -99,7 +99,7 @@ export async function PUT(request: Request, { params }: Params) {
 
 export async function DELETE(request: Request, { params }: Params) {
     const body = await request.json()
-    const result = deleteAccountSchema.safeParse(body)
+    const result = authSchema.safeParse(body)
 
     if (!result.success) return NextResponse.json(result.error)
 

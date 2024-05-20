@@ -44,7 +44,7 @@ export const accountSchema= z.object({
     password: string()
 })
 
-export const deleteAccountSchema= z.object({
+export const authSchema= z.object({
     email: string().email(),
     password: string()
 })
