@@ -22,16 +22,18 @@ export async function POST(request: Request) {
 
         if (!credentialsCorrects || email !== credentialExist.email) return NextResponse.json({ message: "credentials incorrects", code: 400 }, { status: 400 })
 
+        const rolExist= await prisma.rol.findFirst({where:{id:credentialExist.rol_id}})
+        
         const token = jwt.sign(
             {
                 email: credentialExist.email,
-                rol: credentialExist.rol_id,
+                rol: rolExist.name,
                 external_id: credentialExist.external_id
             }, process.env.SECRET_KEY, { expiresIn: '2h' }
         )
 
         return NextResponse.json({ message: "ok! user logged", code: 200, token }, { status: 200 })
-        
+
     } catch (error) {
         return NextResponse.json({ message: error, code: 500 }, { status: 500 })
     }

@@ -39,3 +39,5 @@ model Rol{
   credentials Credentials[] 
   external_id String @unique @default(uuid())
 }
+
+
