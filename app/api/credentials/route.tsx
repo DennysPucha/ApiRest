@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../libs/prisma";
-import { credentialsSchema, } from "../../../schemas/schemas";
+import { credentialsSchema, credentialsAlterSchema } from "../../../schemas/schemas";
 import { modelCredentialSanitized } from "../../../utils/cleanModels";
 import { hashPassword, comparePasswords } from "../../../hooks/cifrateHook";
 import { rolUser } from "../../../hooks/foundData";
@@ -28,11 +28,11 @@ export async function GET() {
 export async function POST(request: Request) {
     const body = await request.json()
 
-    const result = credentialsSchema.safeParse(body)
+    const result = credentialsAlterSchema.safeParse(body)
 
     if (!result.success) return NextResponse.json(result.error)
 
-    const { email, password:pswOutCifrate, user } = result.data;
+    const { email, password:pswOutCifrate, user, rol} = result.data;
   
     const getUser =await prisma.user.findUnique({
         where:{external_id: user},
@@ -51,6 +51,14 @@ export async function POST(request: Request) {
 
     if (getUser.credentials) return NextResponse.json({message:"User already have account",code:400},{status:400})
 
+    const rolExist= await prisma.rol.findFirst({where:{external_id:rol}})
+
+    if (!rolExist) return NextResponse.json({message:"rol not found",code:404},{status:404})
+
+    if (rolExist.state === false) return NextResponse.json({ message: "rol disabled", code: 400 }, { status: 400 })
+
+    if (getUser.state === false) return NextResponse.json({ message: "user disabled", code: 400 }, { status: 400 })
+
     try {
         const password= await hashPassword(pswOutCifrate)
 
@@ -61,7 +69,7 @@ export async function POST(request: Request) {
                 email,
                 password,
                 user_id:getUser.id,
-                rol_id:rol.id
+                rol_id:rolExist.id
             }
         });
 

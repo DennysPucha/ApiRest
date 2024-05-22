@@ -5,7 +5,7 @@ POST http://localhost:3000/api/users
 Content-Type: application/json
 
 {
-    "name": "juanito new",
+    "name": "juanito new 2",
     "lastname": "perez",
     "phone": "0982763941"
 }
@@ -14,14 +14,12 @@ Content-Type: application/json
 GET http://localhost:3000/api/users/6691f08d-6e29-4026-86af-2e1d9c61fbce
 
 ###
-PUT http://localhost:3000/api/users/6691f08d-6e29-4026-86af-2e1d9c61fbce
+PUT http://localhost:3000/api/users/5a1fc3b3-0ebc-44cd-8072-1f759f23a55b
 Content-Type: application/json
 
 {
-    "name": "juan ultra modificado",
-    "lastname": "perez",
-    "phone": "0982763941"
+    "state": true
 }
 
 ###
-DELETE http://localhost:3000/api/users/6691f08d-6e29-4026-86af-2e1d9c61fbce
+DELETE http://localhost:3000/api/users/5a1fc3b3-0ebc-44cd-8072-1f759f23a55b

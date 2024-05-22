@@ -86,6 +86,7 @@ export async function PUT(request: Request, { params }: Params) {
 
         const updatedSanitized= await modelUserCredentialSanitized(updated)
 
+        
         return NextResponse.json({
             message: "account updated",
             code: 200,
@@ -119,19 +120,31 @@ export async function DELETE(request: Request, { params }: Params) {
  
         if(!credentialsCorrects || email!== credentialsExist.email) return NextResponse.json({ message: "credentials incorrects", code: 400 }, { status: 400 }) 
 
-        const deleted = await prisma.user.delete({
-            where: {external_id: account.external_id},
-            include: {credentials:true}
+        const disabled = await prisma.user.update({
+            where: {
+                external_id: account.external_id
+            },
+            data:{
+                state:false,
+                credentials:{
+                    update:{
+                        state:false
+                    }
+                }
+            },
+            include: {
+                credentials:true
+            }
         });
 
-        if (!deleted) return NextResponse.json({ 
-            message: "account not deleted",
+        if (!disabled) return NextResponse.json({ 
+            message: "account not disabled",
             code: 400 }, { status: 400 })
 
-        const updatedSanitized= await modelUserCredentialSanitized(deleted)
+        const updatedSanitized= await modelUserCredentialSanitized(disabled)
 
         return NextResponse.json({
-            message: "account deleted",
+            message: "account disabled",
             code: 200,
             data: updatedSanitized
         }, { status: 200 })

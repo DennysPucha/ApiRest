@@ -24,6 +24,8 @@ export async function POST(request: Request) {
 
         const rolExist= await prisma.rol.findFirst({where:{id:credentialExist.rol_id}})
         
+        if (credentialExist.state === false || rolExist.state === false) return NextResponse.json({ message: "account or rol disabled", code: 400 }, { status: 400 })
+
         const token = jwt.sign(
             {
                 email: credentialExist.email,

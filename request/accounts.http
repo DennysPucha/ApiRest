@@ -9,7 +9,7 @@ Content-Type: application/json
     "name": "Dennys2 Alexander",
     "lastname": "Pucha Carrera",
     "phone": "123456789",
-    "email": "dennys552@pipi.com",
+    "email": "dennysalexp@pipi.com",
     "password": "123456"
 }
 
@@ -30,10 +30,10 @@ Content-Type: application/json
 GET http://localhost:3000/api/accounts/userAccounts/7bed77ee-5edf-4c6a-bf23-5eefd08ae6ed
 
 ###
-DELETE  http://localhost:3000/api/accounts/userAccounts/e92b42eb-a776-4ef2-bfaa-015947a20928
+DELETE  http://localhost:3000/api/accounts/userAccounts/305099a9-e8a9-404e-a390-a65c7029d6ae
 Content-Type: application/json
 
 {
-    "email": "dennys552@pipi.com",
+    "email": "dennysalexp@pipi.com",
     "password": "123456"
 }

@@ -80,18 +80,19 @@ export async function DELETE(request: Request, { params }: Params) {
 
     try {
 
-        const deleted = await prisma.rol.delete({
-            where: {external_id: rol.external_id}
+        const disabled = await prisma.rol.update({
+            where: {external_id: rol.external_id},
+            data:{ state:false }
         });
 
-        if (!deleted) return NextResponse.json({ 
-            message: "resource not deleted",
+        if (!disabled) return NextResponse.json({ 
+            message: "resource not disabled",
             code: 400 }, { status: 400 })
 
-        const updatedSanitized= modelRolSanitized(deleted)
+        const updatedSanitized= modelRolSanitized(disabled)
 
         return NextResponse.json({
-            message: "rol deleted",
+            message: "rol disabled",
             code: 200,
             data: updatedSanitized
         }, { status: 200 })

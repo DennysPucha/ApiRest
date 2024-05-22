@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../../libs/prisma";
-import { userSchema } from "../../../../schemas/schemas";
+import { userPutSchema } from "../../../../schemas/schemas";
 import { modelUserSanitized } from "../../../../utils/cleanModels";
 interface Params { params: { external_id: string } }
 interface RequestQuery { foo:string}
@@ -27,7 +27,7 @@ export async function GET(request: Request, { params }: Params) {
 
 export async function PUT(request: Request, { params }: Params) {
     const body = await request.json()
-    const result = userSchema.safeParse(body)
+    const result = userPutSchema.safeParse(body)
 
     if (!result.success) return NextResponse.json(result.error)
 
@@ -36,7 +36,7 @@ export async function PUT(request: Request, { params }: Params) {
     if (!userExist) return NextResponse.json({ message: "user not found", code: 404 }, { status: 404 })
 
     try {
-        const { phone, lastname, name } = result.data;
+        const { phone, lastname, name, state } = result.data;
 
         const updated = await prisma.user.update({
             where: {
@@ -46,7 +46,8 @@ export async function PUT(request: Request, { params }: Params) {
                 name,
                 lastname,
                 phone,
-                external_id: crypto.randomUUID()
+                external_id: crypto.randomUUID(),
+                state
             }
         });
 
@@ -75,18 +76,19 @@ export async function DELETE(request: Request, { params }: Params) {
 
     try {
 
-        const deleted = await prisma.user.delete({
-            where: {external_id: userExist.external_id}
+        const disabled = await prisma.user.update({
+            where: {external_id: userExist.external_id},
+            data: { state: false }
         });
 
-        if (!deleted) return NextResponse.json({ 
-            message: "user not deleted",
+        if (!disabled) return NextResponse.json({ 
+            message: "user not disabled",
             code: 400 }, { status: 400 })
 
-        const updatedSanitized= modelUserSanitized(deleted)
+        const updatedSanitized= modelUserSanitized(disabled)
 
         return NextResponse.json({
-            message: "user deleted",
+            message: "user disabled",
             code: 200,
             data: updatedSanitized
         }, { status: 200 })

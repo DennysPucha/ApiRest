@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../../libs/prisma";
-import { credentialPutSchema} from "../../../../schemas/schemas";
+import { credentialPutSchema, credentialPutAlterSchema, authSchema} from "../../../../schemas/schemas";
 import { modelCredentialSanitized } from "../../../../utils/cleanModels";
 import { comparePasswords,hashPassword } from "../../../../hooks/cifrateHook";
 interface Params { params: { external_id: string } }
@@ -29,7 +29,7 @@ export async function GET(request: Request, { params }: Params) {
 
 export async function PUT(request: Request, { params }: Params) {
     const body = await request.json()
-    const result = credentialPutSchema.safeParse(body)
+    const result = credentialPutAlterSchema.safeParse(body)
 
     if (!result.success) return NextResponse.json(result.error)
 
@@ -39,17 +39,31 @@ export async function PUT(request: Request, { params }: Params) {
 
     
     try {
-        const { email, password:pswOutCifrate, lastpassword} = result.data;
+        const { email, password:pswOutCifrate, lastpassword , rol, state} = result.data;
 
-        const credentialsCorrects=await comparePasswords(lastpassword,credentials.password)
+        let credentialsCorrects=false
 
+        if (lastpassword){
+            credentialsCorrects=await comparePasswords(lastpassword,credentials.password)
+        }else{
+            credentialsCorrects=await comparePasswords(pswOutCifrate,credentials.password)
+        }
+            
         if(!credentialsCorrects) return NextResponse.json({ message: "credentials incorrects", code: 400 }, { status: 400 }) 
-        
+
+
         const credentialsExist = await prisma.credentials.findFirst({ where: { email } });
-        
+
         if (credentialsExist && credentialsExist.external_id !== credentials.external_id) {
             return NextResponse.json({ message: "Email already in use", code: 400 }, { status: 400 });
         }
+
+        const rolExist= await prisma.rol.findFirst({where:{external_id:rol}})
+
+        if (!rolExist) return NextResponse.json({message:"rol not found",code:404},{status:404})
+
+
+        if (rolExist.state === false) return NextResponse.json({ message: "rol disabled", code: 400 }, { status: 400 })
 
         const password= await hashPassword(pswOutCifrate)
 
@@ -60,7 +74,9 @@ export async function PUT(request: Request, { params }: Params) {
             data: {
                 email,
                 password,
-                external_id: crypto.randomUUID()
+                external_id: crypto.randomUUID(),
+                rol_id:rolExist.id,
+                state
             },
         });
 
@@ -83,27 +99,41 @@ export async function PUT(request: Request, { params }: Params) {
 
 
 export async function DELETE(request: Request, { params }: Params) {
+    const body = await request.json()
+    const result = authSchema.safeParse(body)
+    
+    if (!result.success) return NextResponse.json(result.error)
+
     const credentials = await prisma.credentials.findFirst({ where: { external_id: params.external_id } })
 
     if (!credentials) return NextResponse.json({ message: "credentials not found", code: 404 }, { status: 404 })
 
+    const {email,password}=result.data
+
+    const credentialsCorrects=await comparePasswords(password,credentials.password)
+
+    if(!credentialsCorrects || email!== credentials.email) return NextResponse.json({ message: "credentials incorrects", code: 400 }, { status: 400 })
+
     try {
-        const deleted = await prisma.credentials.delete({
+        const disabled = await prisma.credentials.update({
             where: {
                 external_id: credentials.external_id
+            },
+            data:{
+                state:false
             }
         })
 
-        if (!deleted) return NextResponse.json({ 
-            message: "credential not elimined",
+        if (!disabled) return NextResponse.json({ 
+            message: "credential not disabled",
             code:400}, { status: 400 })
 
-        const deletedSanitized = await  modelCredentialSanitized(deleted)
+        const disabledSanitized = await  modelCredentialSanitized(disabled)
 
         return NextResponse.json({
-            message: "credential deleted",
+            message: "credential disabled",
             code: 200,
-            data: deletedSanitized
+            data: disabledSanitized
         }, { status: 200 })
 
     } catch (error) {
