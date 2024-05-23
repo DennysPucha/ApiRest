@@ -1,19 +1,19 @@
 export function setItem(key, value) {
-    localStorage(key, value)
+    window.localStorage.setItem(key, value)
 }
 
 export function getItem(key) {
-    return localStorage(key)
+    return window.localStorage.getItem(key)
 }
 
 export function removeItem(key) {
-    localStorage.removeItem(key)
+    window.localStorage.removeItem(key)
 }
 
 export function clear() {
-    localStorage.clear()
+    window.localStorage.clear()
 }
 
 export function isSessionActive() {
-    return localStorage.getItem("token") ? true : false
+    return window.localStorage.getItem("token") ? true : false
 }
