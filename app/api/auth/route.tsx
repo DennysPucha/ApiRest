@@ -42,3 +42,7 @@ export async function POST(request: Request) {
 
 
 }
+
+export async function GET(request:Request){
+    return NextResponse.json({message:"Page of Api Rest",code:200},{status:200})
+}

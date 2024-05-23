@@ -6,21 +6,21 @@ POST http://localhost:3000/api/accounts/userAccounts
 Content-Type: application/json
 
 {
-    "name": "Dennys2 Alexander",
+    "name": "Dennys Alexander",
     "lastname": "Pucha Carrera",
     "phone": "123456789",
-    "email": "dennysalexp@pipi.com",
+    "email": "dennys.pucha@unl.edu.ec",
     "password": "123456"
 }
 
-###
+###     
 PUT http://localhost:3000/api/accounts/userAccounts/4ed83921-5452-4050-8191-c722c5b886be
 Content-Type: application/json
 
 {
     "name": "Dennys2 Actualizado",
     "lastname": "Pucha Carrera",
-    "phone": "123456789",
+    "phone": "123456789",   
     "email": "dennysuser3@pipi.com",
     "lastpassword": "contrasena1234567",
     "password": "contrasena123456"
